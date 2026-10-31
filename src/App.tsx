@@ -16,7 +16,7 @@ export default function App() {
 
   return (
     <main className="mx-auto max-w-6xl space-y-5 px-3 py-6 sm:px-4 sm:py-10">
-      <header className="flex items-center justify-between">
+      <header className="flex items-center justify-between gap-3">
         <h1>
           <Logo />
         </h1>
@@ -30,20 +30,20 @@ export default function App() {
 
         <section aria-label="Your tasks" className="min-w-0 space-y-5">
           <div className="space-y-3">
-            <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_auto_auto]">
+            <div className="grid min-w-0 grid-cols-2 gap-2 sm:grid-cols-[minmax(0,1fr)_auto_auto]">
               <Input
                 type="search"
                 value={t.searchTerm}
                 onChange={(event) => t.setSearchTerm(event.target.value)}
                 placeholder="Search by title"
                 aria-label="Search tasks by title"
-                className="w-full"
+                className="col-span-2 w-full sm:col-span-1"
               />
               <Select
                 value={t.tagFilter}
                 onChange={(event) => t.setTagFilter(event.target.value)}
                 aria-label="Filter tasks by tag"
-                className="w-32"
+                className="w-full sm:w-32"
               >
                 <option value="all">All tags</option>
                 {t.availableTags.map((tag) => (
@@ -58,7 +58,7 @@ export default function App() {
                   t.setSort(event.target.value as typeof t.sort)
                 }
                 aria-label="Sort tasks"
-                className="w-32"
+                className="w-full sm:w-32"
               >
                 <option value="newest">Newest</option>
                 <option value="oldest">Oldest</option>

@@ -39,7 +39,7 @@ export function ConfirmDialog({
       }}
       className="m-auto w-[calc(100%-2rem)] max-w-md rounded-2xl border border-border bg-surface p-0 text-fg shadow-xl backdrop:bg-black/50"
     >
-      <div className="space-y-5 p-6">
+      <div className="space-y-5 p-4 sm:p-6">
         <div className="space-y-2">
           <h2 id="confirm-dialog-title" className="text-lg font-bold">
             {title}
@@ -48,7 +48,7 @@ export function ConfirmDialog({
             {description}
           </p>
         </div>
-        <div className="flex justify-end gap-2">
+        <div className="flex flex-wrap justify-end gap-2">
           <Button variant="ghost" autoFocus onClick={onCancel}>
             Cancel
           </Button>
