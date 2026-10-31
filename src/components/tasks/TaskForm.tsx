@@ -103,7 +103,7 @@ export function TaskForm({ onAdd }: TaskFormProps) {
             type="date"
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
-            className="w-full dark:[color-scheme:dark]"
+            className="w-[calc(100%-1rem)] dark:[color-scheme:dark] sm:w-full"
           />
         </Field>
         <Field label="Priority" className="min-w-0">

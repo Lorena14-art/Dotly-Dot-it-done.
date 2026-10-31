@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import type { Recurrence, Task, TaskChanges } from "../../types";
+import type { Priority, Recurrence, Task, TaskChanges } from "../../types";
 import {
   cleanDescription,
   cleanTags,
@@ -25,6 +25,7 @@ export function TaskEditForm({ task, onSave, onCancel }: TaskEditFormProps) {
   const [tags, setTags] = useState((task.tags ?? []).join(", "));
   const [checklist, setChecklist] = useState(task.checklist ?? []);
   const [dueDate, setDueDate] = useState(task.dueDate ?? "");
+  const [priority, setPriority] = useState<Priority>(task.priority);
   const [recurrence, setRecurrence] = useState<Recurrence | "never">(
     task.recurrence ?? "never",
   );
@@ -42,6 +43,7 @@ export function TaskEditForm({ task, onSave, onCancel }: TaskEditFormProps) {
       title: cleanT,
       description: cleanD || undefined,
       dueDate: dueDate || undefined,
+      priority,
       tags: cleanTags(tags),
       checklist: checklist.length > 0 ? checklist : undefined,
       recurrence: recurrence === "never" ? undefined : recurrence,
@@ -95,8 +97,19 @@ export function TaskEditForm({ task, onSave, onCancel }: TaskEditFormProps) {
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
             aria-label="Due date"
-            className="w-full dark:[color-scheme:dark]"
+            className="w-[calc(100%-1rem)] dark:[color-scheme:dark] sm:w-full"
           />
+        </Field>
+        <Field label="Priority" className="min-w-0">
+          <Select
+            value={priority}
+            onChange={(event) => setPriority(event.target.value as Priority)}
+            className="w-full"
+          >
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </Select>
         </Field>
         <Field label="Repeat" className="min-w-0">
           <Select

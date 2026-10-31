@@ -34,6 +34,12 @@ export type NewTaskInput = {
 export type TaskChanges = Partial<
   Pick<
     Task,
-    "title" | "description" | "dueDate" | "tags" | "checklist" | "recurrence"
+    | "title"
+    | "description"
+    | "dueDate"
+    | "priority"
+    | "tags"
+    | "checklist"
+    | "recurrence"
   >
 >;
