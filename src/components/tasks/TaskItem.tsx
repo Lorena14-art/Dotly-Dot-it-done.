@@ -12,6 +12,8 @@ import { TaskEditForm } from "./TaskEditForm";
 interface TaskItemProps {
   task: Task;
   onToggle: (id: string) => void;
+  selected: boolean;
+  onSelect: (id: string, selected: boolean) => void;
   onToggleChecklistItem: (id: string, itemId: string) => void;
   onEdit: (id: string, changes: TaskChanges) => void;
   onDelete: (id: string) => void;
@@ -27,6 +29,8 @@ interface TaskItemProps {
 export function TaskItem({
   task,
   onToggle,
+  selected,
+  onSelect,
   onToggleChecklistItem,
   onEdit,
   onDelete,
@@ -68,10 +72,19 @@ export function TaskItem({
       onDragEnter={() => setIsDropTarget(true)}
       onDragLeave={() => setIsDropTarget(false)}
       onDrop={handleDrop}
-      className={`flex items-start gap-3 rounded-2xl border bg-surface px-4 py-3 ${
+      className={`grid min-w-0 grid-cols-[auto_auto_minmax(0,1fr)] items-start gap-2 rounded-2xl border bg-surface p-3 sm:grid-cols-[auto_auto_minmax(0,1fr)_auto] sm:gap-3 sm:px-4 sm:py-3 ${
+        selected ? "ring-1 ring-primary" : ""
+      } ${
         isDropTarget ? "border-primary" : "border-border"
       } ${isDragging ? "opacity-50" : ""}`}
     >
+      <input
+        type="checkbox"
+        checked={selected}
+        onChange={(event) => onSelect(task.id, event.target.checked)}
+        aria-label={`Select "${task.title}" for bulk actions`}
+        className="mt-1 size-4 shrink-0 accent-primary"
+      />
       <div className="pt-0.5">
         <DotCheckbox
           checked={task.completed}
@@ -92,7 +105,7 @@ export function TaskItem({
       ) : (
         <>
           <div
-            className="min-w-0 flex-1"
+            className="min-w-0"
             onDoubleClick={() => setEditing(true)}
           >
             <div className="flex items-center gap-2">
@@ -165,7 +178,7 @@ export function TaskItem({
             )}
           </div>
 
-          <div className="flex shrink-0 gap-1">
+          <div className="col-span-3 flex justify-end gap-1 sm:col-start-4 sm:col-span-1 sm:row-start-1">
             <Button
               variant="ghost"
               onClick={() => setEditing(true)}

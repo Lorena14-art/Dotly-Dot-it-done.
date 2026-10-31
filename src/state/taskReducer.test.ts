@@ -81,6 +81,53 @@ describe("taskReducer", () => {
     expect(result[1].checklist).toBeUndefined();
   });
 
+  it("marks selected tasks complete and creates recurring occurrences", () => {
+    const result = taskReducer(
+      [
+        task({ id: "repeat", recurrence: "weekly", dueDate: "2026-03-01" }),
+        task({ id: "plain" }),
+        task({ id: "unselected" }),
+      ],
+      {
+        type: "setCompleted",
+        ids: ["repeat", "plain"],
+        completed: true,
+        nextOccurrences: {
+          repeat: { id: "next", createdAt: 4 },
+        },
+      },
+    );
+
+    expect(result.map((item) => item.id)).toEqual([
+      "next",
+      "repeat",
+      "plain",
+      "unselected",
+    ]);
+    expect(result[0].dueDate).toBe("2026-03-08");
+    expect(result[1].completed).toBe(true);
+    expect(result[2].completed).toBe(true);
+    expect(result[3].completed).toBe(false);
+  });
+
+  it("deletes and restores multiple tasks", () => {
+    const initial = [task({ id: "a" }), task({ id: "b" }), task({ id: "c" })];
+    const deleted = taskReducer(initial, {
+      type: "deleteMany",
+      ids: ["a", "c"],
+    });
+    const restored = taskReducer(deleted, {
+      type: "restoreMany",
+      tasks: [initial[0], initial[2]],
+    });
+
+    expect(deleted.map((item) => item.id)).toEqual(["b"]);
+    expect(restored).toHaveLength(3);
+    expect(new Set(restored.map((item) => item.id))).toEqual(
+      new Set(["a", "b", "c"]),
+    );
+  });
+
   it("clears completed tasks", () => {
     const result = taskReducer(
       [task({ id: "a", completed: true }), task({ id: "b" })],

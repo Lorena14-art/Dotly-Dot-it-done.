@@ -15,7 +15,7 @@ export default function App() {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <main className="mx-auto max-w-6xl space-y-5 px-4 py-10">
+    <main className="mx-auto max-w-6xl space-y-5 px-3 py-6 sm:px-4 sm:py-10">
       <header className="flex items-center justify-between">
         <h1>
           <Logo />
@@ -23,14 +23,14 @@ export default function App() {
         <ThemeToggle theme={theme} onToggle={toggleTheme} />
       </header>
 
-      <div className="grid items-start gap-6 lg:grid-cols-[minmax(18rem,0.8fr)_minmax(0,1.2fr)]">
-        <section aria-label="Add a task">
+      <div className="grid min-w-0 items-start gap-4 sm:gap-6 lg:grid-cols-[minmax(18rem,0.8fr)_minmax(0,1.2fr)]">
+        <section aria-label="Add a task" className="min-w-0">
           <TaskForm onAdd={t.addTask} />
         </section>
 
-        <section aria-label="Your tasks" className="space-y-5">
+        <section aria-label="Your tasks" className="min-w-0 space-y-5">
           <div className="space-y-3">
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_auto_auto]">
+            <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_auto_auto]">
               <Input
                 type="search"
                 value={t.searchTerm}
@@ -70,6 +70,12 @@ export default function App() {
           </div>
 
           <TaskList
+            key={JSON.stringify([
+              t.filter,
+              t.searchTerm,
+              t.tagFilter,
+              t.tasks.map((task) => task.id).sort(),
+            ])}
             tasks={t.tasks}
             emptyMessage={
               t.totalCount === 0
@@ -83,6 +89,8 @@ export default function App() {
             onEdit={t.editTask}
             onDelete={t.deleteTask}
             onReorder={t.reorderTasks}
+            onSetCompleted={t.setTasksCompleted}
+            onDeleteMany={t.deleteTasks}
           />
 
           {t.totalCount > 0 && (

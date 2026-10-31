@@ -24,7 +24,7 @@ export function Toast({
   return (
     <div
       role="status"
-      className="fixed left-1/2 top-6 z-50 grid min-w-64 -translate-x-1/2 grid-cols-[1fr_auto_1fr] items-center rounded-2xl bg-fg px-3 py-1 text-sm text-bg shadow-lg"
+      className="fixed left-1/2 top-6 z-50 grid w-[calc(100%-2rem)] max-w-md -translate-x-1/2 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center rounded-2xl bg-fg px-3 py-1 text-sm text-bg shadow-lg"
     >
       <span className="col-start-2 text-center">{message}</span>
       <Button

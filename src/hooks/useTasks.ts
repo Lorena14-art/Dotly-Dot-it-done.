@@ -11,7 +11,7 @@ export function useTasks() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sort, setSort] = useLocalStorage<TaskSort>("dotly:task-sort", "newest");
   const [tagFilter, setTagFilter] = useState("all");
-  const [lastDeleted, setLastDeleted] = useState<Task | null>(null);
+  const [lastDeleted, setLastDeleted] = useState<Task[] | null>(null);
 
   // Reducer logic + localStorage persistence in one place
   const dispatch = useCallback(
@@ -37,6 +37,23 @@ export function useTasks() {
         : undefined;
     dispatch({ type: "toggle", id, nextOccurrence });
   };
+  const setTasksCompleted = (ids: string[], completed: boolean) => {
+    const nextOccurrences =
+      completed
+        ? Object.fromEntries(
+            tasks
+              .filter(
+                (task) =>
+                  ids.includes(task.id) && !task.completed && task.recurrence,
+              )
+              .map((task) => [
+                task.id,
+                { id: crypto.randomUUID(), createdAt: Date.now() },
+              ]),
+          )
+        : undefined;
+    dispatch({ type: "setCompleted", ids, completed, nextOccurrences });
+  };
   const toggleChecklistItem = (id: string, itemId: string) =>
     dispatch({ type: "toggleChecklistItem", id, itemId });
   const editTask = (id: string, changes: TaskChanges) =>
@@ -52,13 +69,21 @@ export function useTasks() {
 
   const deleteTask = (id: string) => {
     const task = tasks.find((t) => t.id === id);
-    if (task) setLastDeleted(task); // remember it for Undo
+    if (task) setLastDeleted([task]);
     dispatch({ type: "delete", id });
+  };
+
+  const deleteTasks = (ids: string[]) => {
+    const idsToDelete = new Set(ids);
+    const deletedTasks = tasks.filter((task) => idsToDelete.has(task.id));
+    if (deletedTasks.length === 0) return;
+    setLastDeleted(deletedTasks);
+    dispatch({ type: "deleteMany", ids: [...idsToDelete] });
   };
 
   const undoDelete = useCallback(() => {
     if (!lastDeleted) return;
-    dispatch({ type: "restore", task: lastDeleted });
+    dispatch({ type: "restoreMany", tasks: lastDeleted });
     setLastDeleted(null);
   }, [dispatch, lastDeleted]);
 
@@ -131,10 +156,12 @@ export function useTasks() {
     availableTags,
     addTask,
     toggleTask,
+    setTasksCompleted,
     toggleChecklistItem,
     editTask,
     reorderTasks,
     deleteTask,
+    deleteTasks,
     clearCompleted,
     lastDeleted,
     undoDelete,

@@ -8,6 +8,12 @@ export type Action =
       id: string;
       nextOccurrence?: { id: string; createdAt: number };
     }
+  | {
+      type: "setCompleted";
+      ids: string[];
+      completed: boolean;
+      nextOccurrences?: Record<string, { id: string; createdAt: number }>;
+    }
   | { type: "toggleChecklistItem"; id: string; itemId: string }
   | { type: "edit"; id: string; changes: TaskChanges }
   | {
@@ -17,7 +23,9 @@ export type Action =
       position: "before" | "after";
     }
   | { type: "delete"; id: string }
+  | { type: "deleteMany"; ids: string[] }
   | { type: "restore"; task: Task }
+  | { type: "restoreMany"; tasks: Task[] }
   | { type: "clearCompleted" };
 
 export function taskReducer(tasks: Task[], action: Action): Task[] {
@@ -53,6 +61,32 @@ export function taskReducer(tasks: Task[], action: Action): Task[] {
         })),
       };
       return [nextTask, ...updatedTasks];
+    }
+    case "setCompleted": {
+      const selectedIds = new Set(action.ids);
+      const nextTasks: Task[] = [];
+      const updatedTasks = tasks.map((task) => {
+        if (!selectedIds.has(task.id) || task.completed === action.completed) {
+          return task;
+        }
+        if (action.completed && task.recurrence && action.nextOccurrences?.[task.id]) {
+          const nextTask: Task = {
+            ...task,
+            ...action.nextOccurrences[task.id],
+            completed: false,
+            dueDate: task.dueDate
+              ? nextDueDate(task.dueDate, task.recurrence)
+              : undefined,
+            checklist: task.checklist?.map((item) => ({
+              ...item,
+              completed: false,
+            })),
+          };
+          nextTasks.push(nextTask);
+        }
+        return { ...task, completed: action.completed };
+      });
+      return [...nextTasks, ...updatedTasks];
     }
     case "toggleChecklistItem":
       return tasks.map((task) =>
@@ -91,8 +125,14 @@ export function taskReducer(tasks: Task[], action: Action): Task[] {
     }
     case "delete":
       return tasks.filter((t) => t.id !== action.id);
+    case "deleteMany": {
+      const ids = new Set(action.ids);
+      return tasks.filter((task) => !ids.has(task.id));
+    }
     case "restore":
       return [...tasks, action.task].sort((a, b) => b.createdAt - a.createdAt);
+    case "restoreMany":
+      return [...tasks, ...action.tasks].sort((a, b) => b.createdAt - a.createdAt);
     case "clearCompleted":
       return tasks.filter((t) => !t.completed);
     default:
