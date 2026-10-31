@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 import { taskReducer, type Action } from "../state/taskReducer";
 import { useLocalStorage } from "./useLocalStorage";
 import type { Filter, NewTaskInput, Task, TaskChanges } from "../types";
+import { isDueTodayOrOverdue, isDueWithinNextDays } from "../lib/date";
 
 type TaskSort = "newest" | "oldest" | "title" | "custom";
 
@@ -113,7 +114,12 @@ export function useTasks() {
             ? true
             : filter === "active"
               ? !task.completed
-              : task.completed;
+              : filter === "completed"
+                ? task.completed
+                : filter === "today"
+                  ? !task.completed && isDueTodayOrOverdue(task.dueDate)
+                  : !task.completed &&
+                    isDueWithinNextDays(task.dueDate, 7);
         const matchesTag =
           tagFilter === "all" ||
           (task.tags ?? []).some(

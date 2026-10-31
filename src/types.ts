@@ -1,5 +1,5 @@
 export type Priority = "low" | "medium" | "high";
-export type Filter = "all" | "active" | "completed";
+export type Filter = "all" | "active" | "completed" | "today" | "upcoming";
 export type Recurrence = "daily" | "weekly" | "monthly" | "yearly";
 
 export interface Task {

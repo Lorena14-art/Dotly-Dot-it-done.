@@ -1,5 +1,26 @@
 import { describe, expect, it } from "vitest";
-import { nextDueDate } from "./date";
+import {
+  isDueTodayOrOverdue,
+  isDueWithinNextDays,
+  nextDueDate,
+} from "./date";
+
+describe("due-date filters", () => {
+  it("includes overdue and today dates in the Today view", () => {
+    expect(isDueTodayOrOverdue("2026-03-01", "2026-03-02")).toBe(true);
+    expect(isDueTodayOrOverdue("2026-03-02", "2026-03-02")).toBe(true);
+    expect(isDueTodayOrOverdue("2026-03-03", "2026-03-02")).toBe(false);
+    expect(isDueTodayOrOverdue(undefined, "2026-03-02")).toBe(false);
+  });
+
+  it("includes dates in the next seven days but excludes today and later dates", () => {
+    expect(isDueWithinNextDays("2026-03-03", 7, "2026-03-02")).toBe(true);
+    expect(isDueWithinNextDays("2026-03-09", 7, "2026-03-02")).toBe(true);
+    expect(isDueWithinNextDays("2026-03-02", 7, "2026-03-02")).toBe(false);
+    expect(isDueWithinNextDays("2026-03-10", 7, "2026-03-02")).toBe(false);
+    expect(isDueWithinNextDays(undefined, 7, "2026-03-02")).toBe(false);
+  });
+});
 
 describe("nextDueDate", () => {
   it("advances daily and weekly dates", () => {

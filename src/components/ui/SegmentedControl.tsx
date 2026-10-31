@@ -20,7 +20,7 @@ export function SegmentedControl<T extends string>({
     <div
       role="group"
       aria-label={label}
-      className="inline-flex rounded-full bg-surface-alt p-1"
+      className="flex w-fit max-w-full overflow-x-auto rounded-full bg-surface-alt p-1"
     >
       {options.map((o) => (
         <button
@@ -28,7 +28,7 @@ export function SegmentedControl<T extends string>({
           type="button"
           aria-pressed={o.value === value}
           onClick={() => onChange(o.value)}
-          className={`rounded-full px-3 py-1 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-primary ${
+          className={`shrink-0 rounded-full px-3 py-1 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-primary ${
             o.value === value
               ? "bg-primary text-on-primary"
               : "text-fg hover:bg-surface"

@@ -5,6 +5,8 @@ const options: { value: Filter; label: string }[] = [
   { value: "all", label: "All" },
   { value: "active", label: "Active" },
   { value: "completed", label: "Completed" },
+  { value: "today", label: "Today" },
+  { value: "upcoming", label: "Upcoming" },
 ];
 
 interface FilterBarProps {
