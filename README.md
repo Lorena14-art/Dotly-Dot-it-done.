@@ -30,3 +30,21 @@ If you are developing a production application, we recommend enabling type-aware
 ```
 
 See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+
+## Install Dotly and use it offline
+
+Dotly is a Progressive Web App. Deploy the production build over HTTPS (or use
+`localhost` for development), then open it in a supported browser and choose
+**Install app** or **Add to Home Screen** from the browser menu. Installation
+options vary by browser and device.
+
+After the first successful online visit, the service worker caches the app
+shell and built assets so Dotly can launch offline. Tasks are stored in that
+browser's local storage and are not automatically synced between devices.
+
+Create and preview a production build with:
+
+```sh
+npm run build
+npm run preview
+```
