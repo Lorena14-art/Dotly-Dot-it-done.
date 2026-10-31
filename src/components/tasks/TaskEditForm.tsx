@@ -88,22 +88,23 @@ export function TaskEditForm({ task, onSave, onCancel }: TaskEditFormProps) {
       <Field label="Checklist">
         <ChecklistEditor items={checklist} onChange={setChecklist} />
       </Field>
-      <div className="flex flex-wrap items-end gap-2">
-        <Field label="Due date">
+      <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
+        <Field label="Due date" className="min-w-0">
           <Input
             type="date"
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
             aria-label="Due date"
-            className="dark:[color-scheme:dark]"
+            className="w-full dark:[color-scheme:dark]"
           />
         </Field>
-        <Field label="Repeat">
+        <Field label="Repeat" className="min-w-0">
           <Select
             value={recurrence}
             onChange={(event) =>
               setRecurrence(event.target.value as Recurrence | "never")
             }
+            className="w-full"
           >
             <option value="never">Does not repeat</option>
             <option value="daily">Daily</option>
@@ -112,7 +113,7 @@ export function TaskEditForm({ task, onSave, onCancel }: TaskEditFormProps) {
             <option value="yearly">Yearly</option>
           </Select>
         </Field>
-        <div className="ml-auto flex gap-2">
+        <div className="flex justify-end gap-2 sm:col-span-2">
           <Button variant="ghost" onClick={onCancel}>
             Cancel
           </Button>

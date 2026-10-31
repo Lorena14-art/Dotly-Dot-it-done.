@@ -97,31 +97,33 @@ export function TaskForm({ onAdd }: TaskFormProps) {
         <ChecklistEditor items={checklist} onChange={setChecklist} />
       </Field>
 
-      <div className="flex flex-wrap items-end gap-3">
-        <Field label="Due date">
+      <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+        <Field label="Due date" className="min-w-0">
           <Input
             type="date"
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
-            className="dark:[color-scheme:dark]"
+            className="w-full dark:[color-scheme:dark]"
           />
         </Field>
-        <Field label="Priority">
+        <Field label="Priority" className="min-w-0">
           <Select
             value={priority}
             onChange={(e) => setPriority(e.target.value as Priority)}
+            className="w-full"
           >
             <option value="low">Low</option>
             <option value="medium">Medium</option>
             <option value="high">High</option>
           </Select>
         </Field>
-        <Field label="Repeat">
+        <Field label="Repeat" className="min-w-0">
           <Select
             value={recurrence}
             onChange={(e) =>
               setRecurrence(e.target.value as Recurrence | "never")
             }
+            className="w-full"
           >
             <option value="never">Does not repeat</option>
             <option value="daily">Daily</option>
@@ -130,7 +132,10 @@ export function TaskForm({ onAdd }: TaskFormProps) {
             <option value="yearly">Yearly</option>
           </Select>
         </Field>
-        <Button type="submit" className="ml-auto">
+        <Button
+          type="submit"
+          className="w-full sm:col-span-2 lg:col-span-1 xl:col-span-2 xl:w-auto xl:justify-self-end"
+        >
           Add task
         </Button>
       </div>
