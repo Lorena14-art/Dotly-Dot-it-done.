@@ -1,5 +1,6 @@
 export type Priority = "low" | "medium" | "high";
 export type Filter = "all" | "active" | "completed";
+export type Recurrence = "daily" | "weekly" | "monthly" | "yearly";
 
 export interface Task {
   id: string;
@@ -10,6 +11,14 @@ export interface Task {
   createdAt: number;
   priority: Priority;
   tags?: string[];
+  checklist?: ChecklistItem[];
+  recurrence?: Recurrence;
+}
+
+export interface ChecklistItem {
+  id: string;
+  text: string;
+  completed: boolean;
 }
 
 export type NewTaskInput = {
@@ -18,8 +27,13 @@ export type NewTaskInput = {
   description?: string;
   dueDate?: string;
   tags?: string[];
+  checklist?: ChecklistItem[];
+  recurrence?: Recurrence;
 };
 
 export type TaskChanges = Partial<
-  Pick<Task, "title" | "description" | "dueDate" | "tags">
+  Pick<
+    Task,
+    "title" | "description" | "dueDate" | "tags" | "checklist" | "recurrence"
+  >
 >;

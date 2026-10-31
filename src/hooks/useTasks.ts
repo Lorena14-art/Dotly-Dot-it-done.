@@ -3,13 +3,13 @@ import { taskReducer, type Action } from "../state/taskReducer";
 import { useLocalStorage } from "./useLocalStorage";
 import type { Filter, NewTaskInput, Task, TaskChanges } from "../types";
 
-type TaskSort = "newest" | "oldest" | "title";
+type TaskSort = "newest" | "oldest" | "title" | "custom";
 
 export function useTasks() {
   const [tasks, setTasks] = useLocalStorage<Task[]>("dotly:tasks", []);
   const [filter, setFilter] = useState<Filter>("all");
   const [searchTerm, setSearchTerm] = useState("");
-  const [sort, setSort] = useState<TaskSort>("newest");
+  const [sort, setSort] = useLocalStorage<TaskSort>("dotly:task-sort", "newest");
   const [tagFilter, setTagFilter] = useState("all");
   const [lastDeleted, setLastDeleted] = useState<Task | null>(null);
 
@@ -29,9 +29,25 @@ export function useTasks() {
         ...input,
       },
     });
-  const toggleTask = (id: string) => dispatch({ type: "toggle", id });
+  const toggleTask = (id: string) => {
+    const task = tasks.find((currentTask) => currentTask.id === id);
+    const nextOccurrence =
+      task && !task.completed && task.recurrence
+        ? { id: crypto.randomUUID(), createdAt: Date.now() }
+        : undefined;
+    dispatch({ type: "toggle", id, nextOccurrence });
+  };
+  const toggleChecklistItem = (id: string, itemId: string) =>
+    dispatch({ type: "toggleChecklistItem", id, itemId });
   const editTask = (id: string, changes: TaskChanges) =>
     dispatch({ type: "edit", id, changes });
+  const reorderTasks = useCallback(
+    (id: string, targetId: string, position: "before" | "after") => {
+      dispatch({ type: "reorder", id, targetId, position });
+      setSort("custom");
+    },
+    [dispatch, setSort],
+  );
   const clearCompleted = () => dispatch({ type: "clearCompleted" });
 
   const deleteTask = (id: string) => {
@@ -85,6 +101,7 @@ export function useTasks() {
         );
       });
       return filtered.sort((a, b) => {
+        if (sort === "custom") return 0;
         if (sort === "title") {
           return a.title.localeCompare(b.title, undefined, {
             sensitivity: "base",
@@ -114,7 +131,9 @@ export function useTasks() {
     availableTags,
     addTask,
     toggleTask,
+    toggleChecklistItem,
     editTask,
+    reorderTasks,
     deleteTask,
     clearCompleted,
     lastDeleted,

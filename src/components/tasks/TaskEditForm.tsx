@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import type { Task, TaskChanges } from "../../types";
+import type { Recurrence, Task, TaskChanges } from "../../types";
 import {
   cleanDescription,
   cleanTags,
@@ -7,8 +7,11 @@ import {
   MAX_DESCRIPTION,
 } from "../../lib/validate";
 import { Button } from "../ui/Button";
+import { Field } from "../ui/Field";
 import { Input } from "../ui/Input";
 import { Textarea } from "../ui/Textarea";
+import { ChecklistEditor } from "./ChecklistEditor";
+import { Select } from "../ui/Select";
 
 interface TaskEditFormProps {
   task: Task;
@@ -20,7 +23,11 @@ export function TaskEditForm({ task, onSave, onCancel }: TaskEditFormProps) {
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description ?? "");
   const [tags, setTags] = useState((task.tags ?? []).join(", "));
+  const [checklist, setChecklist] = useState(task.checklist ?? []);
   const [dueDate, setDueDate] = useState(task.dueDate ?? "");
+  const [recurrence, setRecurrence] = useState<Recurrence | "never">(
+    task.recurrence ?? "never",
+  );
   const [error, setError] = useState("");
 
   function handleSubmit(e: FormEvent) {
@@ -36,6 +43,8 @@ export function TaskEditForm({ task, onSave, onCancel }: TaskEditFormProps) {
       description: cleanD || undefined,
       dueDate: dueDate || undefined,
       tags: cleanTags(tags),
+      checklist: checklist.length > 0 ? checklist : undefined,
+      recurrence: recurrence === "never" ? undefined : recurrence,
     });
   }
 
@@ -47,36 +56,62 @@ export function TaskEditForm({ task, onSave, onCancel }: TaskEditFormProps) {
       }}
       className="min-w-0 flex-1 space-y-2"
     >
-      <Input
-        autoFocus
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        aria-label="Task title"
-        className="w-full"
-      />
-      <Textarea
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        placeholder="Description (optional)"
-        aria-label="Description"
-        maxLength={MAX_DESCRIPTION}
-        rows={2}
-        className="w-full"
-      />
-      <Input
-        value={tags}
-        onChange={(e) => setTags(e.target.value)}
-        placeholder="Tags (comma-separated)"
-        aria-label="Tags, comma-separated"
-      />
-      <div className="flex flex-wrap items-center gap-2">
+      <Field label="Task title">
         <Input
-          type="date"
-          value={dueDate}
-          onChange={(e) => setDueDate(e.target.value)}
-          aria-label="Due date"
-          className="dark:[color-scheme:dark]"
+          autoFocus
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          aria-label="Task title"
+          className="w-full"
         />
+      </Field>
+      <Field label="Description">
+        <Textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Description (optional)"
+          aria-label="Description"
+          maxLength={MAX_DESCRIPTION}
+          rows={2}
+          className="w-full"
+        />
+      </Field>
+      <Field label="Tags (comma-separated)">
+        <Input
+          value={tags}
+          onChange={(e) => setTags(e.target.value)}
+          placeholder="e.g. work, personal"
+          aria-label="Tags, comma-separated"
+          className="w-full"
+        />
+      </Field>
+      <Field label="Checklist">
+        <ChecklistEditor items={checklist} onChange={setChecklist} />
+      </Field>
+      <div className="flex flex-wrap items-end gap-2">
+        <Field label="Due date">
+          <Input
+            type="date"
+            value={dueDate}
+            onChange={(e) => setDueDate(e.target.value)}
+            aria-label="Due date"
+            className="dark:[color-scheme:dark]"
+          />
+        </Field>
+        <Field label="Repeat">
+          <Select
+            value={recurrence}
+            onChange={(event) =>
+              setRecurrence(event.target.value as Recurrence | "never")
+            }
+          >
+            <option value="never">Does not repeat</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
+          </Select>
+        </Field>
         <div className="ml-auto flex gap-2">
           <Button variant="ghost" onClick={onCancel}>
             Cancel

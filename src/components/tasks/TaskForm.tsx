@@ -1,5 +1,10 @@
 import { useState, type FormEvent } from "react";
-import type { NewTaskInput, Priority } from "../../types";
+import type {
+  ChecklistItem,
+  NewTaskInput,
+  Priority,
+  Recurrence,
+} from "../../types";
 import {
   cleanDescription,
   cleanTags,
@@ -12,6 +17,7 @@ import { Field } from "../ui/Field";
 import { Input } from "../ui/Input";
 import { Select } from "../ui/Select";
 import { Textarea } from "../ui/Textarea";
+import { ChecklistEditor } from "./ChecklistEditor";
 
 interface TaskFormProps {
   onAdd: (input: NewTaskInput) => void;
@@ -21,8 +27,10 @@ export function TaskForm({ onAdd }: TaskFormProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("");
+  const [checklist, setChecklist] = useState<ChecklistItem[]>([]);
   const [dueDate, setDueDate] = useState("");
   const [priority, setPriority] = useState<Priority>("medium");
+  const [recurrence, setRecurrence] = useState<Recurrence | "never">("never");
   const [error, setError] = useState("");
 
   function handleSubmit(e: FormEvent) {
@@ -44,12 +52,16 @@ export function TaskForm({ onAdd }: TaskFormProps) {
       description: cleanD || undefined,
       dueDate: dueDate || undefined,
       tags: cleanTags(tags),
+      checklist: checklist.length > 0 ? checklist : undefined,
+      recurrence: recurrence === "never" ? undefined : recurrence,
     });
 
     setTitle("");
     setDescription("");
     setTags("");
+    setChecklist([]);
     setDueDate("");
+    setRecurrence("never");
     setError("");
   }
 
@@ -81,6 +93,9 @@ export function TaskForm({ onAdd }: TaskFormProps) {
         aria-label="Tags, comma-separated"
         className="w-full"
       />
+      <Field label="Checklist">
+        <ChecklistEditor items={checklist} onChange={setChecklist} />
+      </Field>
 
       <div className="flex flex-wrap items-end gap-3">
         <Field label="Due date">
@@ -99,6 +114,20 @@ export function TaskForm({ onAdd }: TaskFormProps) {
             <option value="low">Low</option>
             <option value="medium">Medium</option>
             <option value="high">High</option>
+          </Select>
+        </Field>
+        <Field label="Repeat">
+          <Select
+            value={recurrence}
+            onChange={(e) =>
+              setRecurrence(e.target.value as Recurrence | "never")
+            }
+          >
+            <option value="never">Does not repeat</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
           </Select>
         </Field>
         <Button type="submit" className="ml-auto">

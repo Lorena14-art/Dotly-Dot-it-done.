@@ -63,6 +63,7 @@ export default function App() {
                 <option value="newest">Newest</option>
                 <option value="oldest">Oldest</option>
                 <option value="title">A–Z</option>
+                <option value="custom">Custom</option>
               </Select>
             </div>
             <FilterBar value={t.filter} onChange={t.setFilter} />
@@ -78,8 +79,10 @@ export default function App() {
                 : "Nothing in this view."
             }
             onToggle={t.toggleTask}
+            onToggleChecklistItem={t.toggleChecklistItem}
             onEdit={t.editTask}
             onDelete={t.deleteTask}
+            onReorder={t.reorderTasks}
           />
 
           {t.totalCount > 0 && (
