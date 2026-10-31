@@ -90,15 +90,17 @@ export function TaskEditForm({ task, onSave, onCancel }: TaskEditFormProps) {
       <Field label="Checklist">
         <ChecklistEditor items={checklist} onChange={setChecklist} />
       </Field>
-      <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
+      <div className="grid min-w-0 grid-cols-2 gap-3">
         <Field label="Due date" className="min-w-0">
-          <Input
-            type="date"
-            value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
-            aria-label="Due date"
-            className="w-[calc(100%-1rem)] dark:[color-scheme:dark] sm:w-full"
-          />
+          <div className="w-full min-w-0">
+            <Input
+              type="date"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+              aria-label="Due date"
+              className="w-full min-w-0 cursor-pointer dark:[color-scheme:dark]"
+            />
+          </div>
         </Field>
         <Field label="Priority" className="min-w-0">
           <Select
@@ -126,7 +128,7 @@ export function TaskEditForm({ task, onSave, onCancel }: TaskEditFormProps) {
             <option value="yearly">Yearly</option>
           </Select>
         </Field>
-        <div className="flex justify-end gap-2 sm:col-span-2">
+        <div className="col-span-2 flex justify-end gap-2">
           <Button variant="ghost" onClick={onCancel}>
             Cancel
           </Button>

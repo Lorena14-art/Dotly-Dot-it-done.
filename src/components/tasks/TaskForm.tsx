@@ -97,14 +97,16 @@ export function TaskForm({ onAdd }: TaskFormProps) {
         <ChecklistEditor items={checklist} onChange={setChecklist} />
       </Field>
 
-      <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+      <div className="grid min-w-0 grid-cols-2 gap-3 lg:grid-cols-1 sm:grid-cols-2 xl:grid-cols-2">
         <Field label="Due date" className="min-w-0">
-          <Input
-            type="date"
-            value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
-            className="w-[calc(100%-1rem)] dark:[color-scheme:dark] sm:w-full"
-          />
+          <div className="w-full min-w-0">
+            <Input
+              type="date"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+              className="w-full min-w-0 cursor-pointer dark:[color-scheme:dark]"
+            />
+          </div>
         </Field>
         <Field label="Priority" className="min-w-0">
           <Select
@@ -134,7 +136,7 @@ export function TaskForm({ onAdd }: TaskFormProps) {
         </Field>
         <Button
           type="submit"
-          className="w-full sm:col-span-2 lg:col-span-1 xl:col-span-2 xl:w-auto xl:justify-self-end"
+          className="col-span-2 w-full lg:col-span-1 xl:col-span-2 xl:w-auto xl:justify-self-end"
         >
           Add task
         </Button>
