@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+:root {
+  --bg: #FFF5F8;
+  --surface: #FFFFFF;
+  --surface-alt: #FFE4EC;
+  --border: #F9C6D6;
+  --primary: #DB2777;
+  --primary-hover: #BE185D;
+  --on-primary: #FFFFFF;
+  --accent: #F472B6;
+  --text: #4A1D33;
+  --text-muted: #9D6B82;
+  --danger: #E11D48;
+}
+
+[data-theme="dark"] {
+  --bg: #1F0F17;
+  --surface: #2D1824;
+  --surface-alt: #3D2133;
+  --border: #5A2E47;
+  --primary: #F472B6;
+  --primary-hover: #F9A8D4;
+  --on-primary: #1F0F17;
+  --accent: #EC4899;
+  --text: #FCE7F1;
+  --text-muted: #C99AB3;
+  --danger: #FB7185;
+}
+
+@theme inline {
+  --font-sans: "Nunito", system-ui, sans-serif;
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-alt: var(--surface-alt);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-on-primary: var(--on-primary);
+  --color-accent: var(--accent);
+  --color-fg: var(--text);
+  --color-muted: var(--text-muted);
+  --color-danger: var(--danger);
+}
+
+@layer base {
+  body {
+    @apply bg-bg font-sans text-fg;
+  }
+}
