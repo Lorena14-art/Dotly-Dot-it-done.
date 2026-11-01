@@ -5,6 +5,8 @@ import { Button } from "../ui/Button";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
 import { TaskItem } from "./TaskItem";
 
+const PAGE_SIZE = 10;
+
 interface TaskListProps {
   tasks: Task[];
   emptyMessage: string;
@@ -33,9 +35,14 @@ export function TaskList({
   const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [selectionMode, setSelectionMode] = useState(false);
+  const [page, setPage] = useState(1);
 
   if (tasks.length === 0) return <EmptyState message={emptyMessage} />;
 
+  const pageCount = Math.ceil(tasks.length / PAGE_SIZE);
+  const currentPage = Math.min(page, pageCount);
+  const pageStart = (currentPage - 1) * PAGE_SIZE;
+  const pageTasks = tasks.slice(pageStart, pageStart + PAGE_SIZE);
   const selectedVisibleIds = tasks
     .filter((task) => selectedIds.has(task.id))
     .map((task) => task.id);
@@ -161,7 +168,7 @@ export function TaskList({
         )}
       </div>
       <ul className="space-y-2">
-        {tasks.map((task, index) => (
+        {pageTasks.map((task, index) => (
           <TaskItem
             key={task.id}
             task={task}
@@ -175,8 +182,8 @@ export function TaskList({
                 return next;
               })
             }
-            previousTaskId={tasks[index - 1]?.id}
-            nextTaskId={tasks[index + 1]?.id}
+            previousTaskId={tasks[pageStart + index - 1]?.id}
+            nextTaskId={tasks[pageStart + index + 1]?.id}
             onReorder={(id, targetId, position) => {
               const target = tasks.find((item) => item.id === targetId);
               onReorder(id, targetId, position);
@@ -190,6 +197,31 @@ export function TaskList({
           />
         ))}
       </ul>
+      {pageCount > 1 && (
+        <nav
+          aria-label="Task list pagination"
+          className="mt-4 flex flex-wrap items-center justify-center gap-3"
+        >
+          <Button
+            variant="ghost"
+            disabled={currentPage === 1}
+            onClick={() => setPage(currentPage - 1)}
+          >
+            Previous
+          </Button>
+          <span className="text-sm text-muted" aria-live="polite">
+            Showing {pageStart + 1}–{Math.min(pageStart + PAGE_SIZE, tasks.length)} of{" "}
+            {tasks.length}
+          </span>
+          <Button
+            variant="ghost"
+            disabled={currentPage === pageCount}
+            onClick={() => setPage(currentPage + 1)}
+          >
+            Next
+          </Button>
+        </nav>
+      )}
       {confirmingDelete && (
         <ConfirmDialog
           title="Delete selected tasks?"
