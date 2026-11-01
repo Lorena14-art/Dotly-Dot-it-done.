@@ -16,11 +16,13 @@ interface FilterBarProps {
 
 export function FilterBar({ value, onChange }: FilterBarProps) {
   return (
-    <SegmentedControl
-      label="Filter tasks"
-      options={options}
-      value={value}
-      onChange={onChange}
-    />
+    <div className="flex justify-center sm:justify-start">
+      <SegmentedControl
+        label="Filter tasks"
+        options={options}
+        value={value}
+        onChange={onChange}
+      />
+    </div>
   );
 }

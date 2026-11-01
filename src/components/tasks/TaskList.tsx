@@ -32,6 +32,7 @@ export function TaskList({
   const [announcement, setAnnouncement] = useState("");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [selectionMode, setSelectionMode] = useState(false);
 
   if (tasks.length === 0) return <EmptyState message={emptyMessage} />;
 
@@ -46,22 +47,36 @@ export function TaskList({
         {announcement}
       </p>
       <div className="mb-3 flex flex-wrap items-center gap-2">
-        <label className="flex items-center gap-2 text-sm text-muted">
-          <input
-            type="checkbox"
-            checked={allSelected}
-            onChange={(event) =>
-              setSelectedIds(
-                event.target.checked
-                  ? new Set(tasks.map((task) => task.id))
-                  : new Set(),
-              )
-            }
-            aria-label={allSelected ? "Deselect all visible tasks" : "Select all visible tasks"}
-            className="size-4 accent-primary"
-          />
-          Select all
-        </label>
+        {!selectionMode && (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              setSelectionMode(true);
+              setSelectedIds(new Set());
+            }}
+          >
+            Select
+          </Button>
+        )}
+        {selectionMode && (
+          <label className="flex items-center gap-2 text-sm text-muted">
+            <input
+              type="checkbox"
+              checked={allSelected}
+              onChange={(event) => {
+                if (event.target.checked) {
+                  setSelectedIds(new Set(tasks.map((task) => task.id)));
+                } else {
+                  setSelectedIds(new Set());
+                  setSelectionMode(false);
+                }
+              }}
+              aria-label={allSelected ? "Deselect all visible tasks" : "Select all visible tasks"}
+              className="size-4 accent-primary"
+            />
+            Select all
+          </label>
+        )}
         {selectedVisibleIds.length > 0 && (
           <>
             <span className="text-sm text-muted">
@@ -72,6 +87,7 @@ export function TaskList({
               onClick={() => {
                 onSetCompleted(selectedVisibleIds, true);
                 setSelectedIds(new Set());
+                setSelectionMode(false);
               }}
               aria-label="Mark selected tasks complete"
               title="Mark complete"
@@ -96,6 +112,7 @@ export function TaskList({
               onClick={() => {
                 onSetCompleted(selectedVisibleIds, false);
                 setSelectedIds(new Set());
+                setSelectionMode(false);
               }}
               aria-label="Mark selected tasks active"
               title="Mark active"
@@ -149,6 +166,7 @@ export function TaskList({
             key={task.id}
             task={task}
             selected={selectedIds.has(task.id)}
+            selectionMode={selectionMode}
             onSelect={(id, selected) =>
               setSelectedIds((current) => {
                 const next = new Set(current);
@@ -180,6 +198,7 @@ export function TaskList({
           onConfirm={() => {
             onDeleteMany(selectedVisibleIds);
             setSelectedIds(new Set());
+            setSelectionMode(false);
             setConfirmingDelete(false);
           }}
           onCancel={() => setConfirmingDelete(false)}

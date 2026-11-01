@@ -12,6 +12,7 @@ import { TaskEditForm } from "./TaskEditForm";
 interface TaskItemProps {
   task: Task;
   onToggle: (id: string) => void;
+  selectionMode: boolean;
   selected: boolean;
   onSelect: (id: string, selected: boolean) => void;
   onToggleChecklistItem: (id: string, itemId: string) => void;
@@ -29,6 +30,7 @@ interface TaskItemProps {
 export function TaskItem({
   task,
   onToggle,
+  selectionMode,
   selected,
   onSelect,
   onToggleChecklistItem,
@@ -72,19 +74,25 @@ export function TaskItem({
       onDragEnter={() => setIsDropTarget(true)}
       onDragLeave={() => setIsDropTarget(false)}
       onDrop={handleDrop}
-      className={`grid min-w-0 grid-cols-[auto_auto_minmax(0,1fr)] items-start gap-2 rounded-2xl border bg-surface p-3 sm:grid-cols-[auto_auto_minmax(0,1fr)_auto] sm:gap-3 sm:px-4 sm:py-3 ${
+      className={`grid min-w-0 ${
+        selectionMode
+          ? "grid-cols-[auto_auto_minmax(0,1fr)] sm:grid-cols-[auto_auto_minmax(0,1fr)_auto]"
+          : "grid-cols-[auto_minmax(0,1fr)] sm:grid-cols-[auto_minmax(0,1fr)_auto]"
+      } items-start gap-2 rounded-2xl border bg-surface p-3 sm:gap-3 sm:px-4 sm:py-3 ${
         selected ? "ring-1 ring-primary" : ""
       } ${
         isDropTarget ? "border-primary" : "border-border"
       } ${isDragging ? "opacity-50" : ""}`}
     >
-      <input
-        type="checkbox"
-        checked={selected}
-        onChange={(event) => onSelect(task.id, event.target.checked)}
-        aria-label={`Select "${task.title}" for bulk actions`}
-        className="mt-1 size-4 shrink-0 accent-primary"
-      />
+      {selectionMode && (
+        <input
+          type="checkbox"
+          checked={selected}
+          onChange={(event) => onSelect(task.id, event.target.checked)}
+          aria-label={`Select "${task.title}" for bulk actions`}
+          className="mt-1 size-4 shrink-0 accent-primary"
+        />
+      )}
       <div className="pt-0.5">
         <DotCheckbox
           checked={task.completed}
@@ -178,7 +186,13 @@ export function TaskItem({
             )}
           </div>
 
-          <div className="col-span-3 flex justify-end gap-1 sm:col-start-4 sm:col-span-1 sm:row-start-1">
+          <div
+            className={`flex justify-end gap-1 ${
+              selectionMode
+                ? "col-span-3 sm:col-start-4"
+                : "col-span-2 sm:col-start-3"
+            } sm:col-span-1 sm:row-start-1`}
+          >
             <Button
               variant="ghost"
               onClick={() => setEditing(true)}
